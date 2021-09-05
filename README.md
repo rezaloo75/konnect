@@ -27,7 +27,7 @@ The goal of the steps outlined in this document is to enable a user with account
 As a pre-condition to the steps outlined in this section we will assume that your Konnect account has been configured for OIDC SSO federation with an IdP as described in [this documentation section](http://google.com). In this section, we will proceed to:
 
 1. Create the Service Catalogues that allow for the three different scopes of services that exist at ACME.
-2. Teams that refelect the permissions associated with the Retail, Investment, and all ACME bank users as users who log into Konnect and need to interact with ServiceHub. 
+2. Teams that reflect the permissions associated with the Retail, Investment, and all ACME bank users as users who log into Konnect and need to interact with ServiceHub. 
 3. The role mappings that allow users to map to the appropriate teams as they log in.  
 
 As an account owner, let's assume that you have an account that is as follows:
@@ -111,7 +111,7 @@ spec:
     - krn:reg/us:org/acme-bank:catalog/investment-catalog:services!create
 ```
 
-3 - We then create the role mappings to allow each user logging in to map to the teams we create above approprietely based on the OIDC log-in claims.  
+3 - We then create the role mappings to allow each user logging in to map to the teams we create above appropriately based on the OIDC log-in claims.  
 
 ```
 apiVersion: konnect.kong.io/v1
@@ -184,9 +184,9 @@ spec:
   users:
   permissions:
     # Update any service
-    - krn:reg/us:org/acme-bank:catalog/retail-sandbox-rg:/*!update
-    - krn:reg/us:org/acme-bank:catalog/retail-sandbox-rg:/*!delete
-    - krn:reg/us:org/acme-bank:catalog/retail-sandbox-rg:!create
+    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:/*!update
+    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:/*!delete
+    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg!create
 ```
 
 ```
@@ -198,9 +198,9 @@ spec:
   users:
   permissions:
     # Update any service
-    - krn:reg/us:org/acme-bank:catalog/investment-sandbox-rg:/*!update
-    - krn:reg/us:org/acme-bank:catalog/investment-sandbox-rg:/*!delete
-    - krn:reg/us:org/acme-bank:catalog/investment-sandbox-rg:!create
+    - krn:reg/us:org/acme-bank:runtime-group/investment-sandbox-rg:/*!update
+    - krn:reg/us:org/acme-bank:runtime-group/investment-sandbox-rg:/*!delete
+    - krn:reg/us:org/acme-bank:runtime-group/investment-sandbox-rg!create
 ```
 
 ```
@@ -212,9 +212,9 @@ spec:
   users:
   permissions:
     # Update any service
-    - krn:reg/us:org/acme-bank:catalog/acme-production-rg:/*!update
-    - krn:reg/us:org/acme-bank:catalog/acme-production-rg:/*!delete
-    - krn:reg/us:org/acme-bank:catalog/acme-production-rg:!create
+    - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/*!update
+    - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/*!delete
+    - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:!create
 ```
 
 3 - Finally, we can now create a single new IDP mapping to make sure that only the members of the operations team have access to the production runtime group.
@@ -259,7 +259,7 @@ Based on the Service Catalogues, Runtime Groups, Teams, and IdP Mappings we have
 
 3. Both Retail and Investment dev group members are able to publish their services to the ACME Common service catalogue so that they are available to any ACME Bank user who logs into ServiceHub and looks at the common catalogue.
 
-4. All ACME Bank employees are able to view all services in the Konnect ServiceHuv Common catalogue. 
+4. All ACME Bank employees are able to view all services in the Konnect ServiceHub Common catalogue. 
 
 4. Users who are in the IdP Retail dev group of ACME Bank are able to see and access the Retail Sandbox Runtime Group in Runtime Manager. They are thus able to:
 	5.	Start/stop Kong Gateway runtime instances that are associated with this runtime group.
