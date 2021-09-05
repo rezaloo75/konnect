@@ -217,7 +217,7 @@ spec:
     - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:!create
 ```
 
-3 - Finally, we can now create a single new IDP mapping to make sure that only the members of the operations team have access to the production runtime group.
+3 - Finally, we can now create new IDP mappings to make sure that the members of the operations team have access to the production runtime group, while the members of the retail and investment dev teams have access to their respective sandbox runtime groups. 
 
 ```
 apiVersion: konnect.kong.io/v1
