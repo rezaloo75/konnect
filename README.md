@@ -1,4 +1,76 @@
-# Enterprise Teams setup example
+# Default setup
+
+As a new Konnect account owner, your organization is setup by default as follows:
+
+1. A single default ServiceHub catalogue.
+2. A single default Runtime Manager Runtime Group. 
+3. A set of default Teams described by the table in the [Default Teams](#Default Teams) section. 
+
+In order to customize your accounts configuration for use across your organizational boundaries, you can modify this default setup by adding new ServiceHub catalogues as well as Runtime Manager Runtime Groups, and associating them with custom Konnect Teams. The [Enterprise customization example](#Enterprise customization example) of this document provides an example end-to-end setup steps to demonstrate how you can customize your organization as such.    
+
+## Default Teams
+
+| Konnect Default Team | Description |  
+| -------------------- | ----------- | 
+| Organization Admin | Users have full access to all objects in the account. |  
+| Service Admin | Users have full access to the default ServiceHub service catalogue. |  
+| Runtime Admin | Users have full access to the default Runtime Manager runtime group. |
+
+The access level of each of these teams is as follows:
+
+```
+apiVersion: konnect.kong.io/v1
+kind: Team
+metadata:
+  name: organization-admin
+spec:
+  users:
+  permissions:
+    # Update any service
+    - krn:reg/us:org/acme-bank:/*!update
+    # Remove service from catalog
+    - krn:reg/us:org/acme-bank:/*!delete
+    # Add a new service to catalog
+    - krn:reg/us:org/acme-bank:!create
+```
+
+```
+apiVersion: konnect.kong.io/v1
+kind: Team
+metadata:
+  name: service-admin
+spec:
+  users:
+  permissions:
+    # Update any service
+    - krn:reg/us:org/acme-bank:catalog/default-catalog:service/*!update
+    # Remove service from catalog
+    - krn:reg/us:org/acme-bank:catalog/default-catalog:service/*!delete
+    # Add a new service to catalog
+    - krn:reg/us:org/acme-bank:catalog/default-catalog:services!create
+```
+
+```
+apiVersion: konnect.kong.io/v1
+kind: Team
+metadata:
+  name: runtime-admin
+spec:
+  users:
+  permissions:
+    # Update any service
+    - krn:reg/us:org/acme-bank:runtime-group/default-rg:/*!update
+    - krn:reg/us:org/acme-bank:runtime-group/default-rg:/*!delete
+    - krn:reg/us:org/acme-bank:runtime-group/default-rg!create
+```
+
+In the next section, we will see how this default starting point state of a Konnect organization can be modified to allow for more complex Enterprise organization setups through an example. 
+
+***_Open Question_***: _This setup does not allow for the more fine grained Service Developer and Service Page Editor roles we have today in Konnect. We need to conclude on how to address that, if at all needed._  
+
+# Enterprise customization example
+
+As a pre-condition to the steps outlined in this section we will assume that your Konnect account has been configured for OIDC SSO federation with an IdP as described in [this documentation section](http://google.com).
 
 As a new Konnect account owner, you need to start by setting up your account for use by your end-users. This document describes the steps you need to take to do so. To illustrate these steps, we will assume a sample scenario that has the following organizational setup. 
 
@@ -24,7 +96,7 @@ The goal of the steps outlined in this document is to enable a user with account
  
 ## Setting up ServiceHub permissions
 
-As a pre-condition to the steps outlined in this section we will assume that your Konnect account has been configured for OIDC SSO federation with an IdP as described in [this documentation section](http://google.com). In this section, we will proceed to:
+In this section, we will proceed to:
 
 1. Create the Service Catalogues that allow for the three different scopes of services that exist at ACME.
 2. Teams that reflect the permissions associated with the Retail, Investment, and all ACME bank users as users who log into Konnect and need to interact with ServiceHub. 
@@ -281,8 +353,8 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
-    - krn:reg/us:org/acme-bank:catalog/*:service/*!deploy
+    # Have access to any service version's configuration 
+    - krn:reg/us:org/acme-bank:catalog/*:service/*!retrieve
 ```
 
 ```
