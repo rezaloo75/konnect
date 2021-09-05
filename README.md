@@ -2,7 +2,7 @@
 
 As a new Konnect account owner, your organization is setup by default as follows:
 
-1. A single default ServiceHub catalogue.
+1. A single default ServiceHub Catalogue.
 2. A single default Runtime Manager Runtime Group. 
 3. A set of default Teams described by the table in the [Default Teams](#Default Teams) section. 
 
