@@ -1,4 +1,4 @@
-# Typical Konnect Organization Setup Walkthrough
+# Enterprise Teams setup example
 
 As a new Konnect account owner, you need to start by setting up your account for use by your end-users. This document describes the steps you need to take to do so. To illustrate these steps, we will assume a sample scenario that has the following organizational setup. 
 
