@@ -26,12 +26,23 @@ metadata:
 spec:
   users:
   permissions:
+    # Retrieve any service
+    - krn:reg/us:org/acme-bank:catalog/*:service/*!retrieve
     # Update any service
-    - krn:reg/us:org/acme-bank:/*!update
+    - krn:reg/us:org/acme-bank:catalog/*:service/*!update
     # Remove service from catalog
-    - krn:reg/us:org/acme-bank:/*!delete
-    # Add a new service to catalog
-    - krn:reg/us:org/acme-bank:!create
+    - krn:reg/us:org/acme-bank:catalog/*:service/*!delete
+    # Create a new service under a catalog
+    - krn:reg/us:org/acme-bank:catalog/*:service!create
+
+    # Retrieve any catalog
+    - krn:reg/us:org/acme-bank:catalog/*!retrieve
+    # Update any catalog
+    - krn:reg/us:org/acme-bank:catalog/*!update
+    # Remove catalog
+    - krn:reg/us:org/acme-bank:catalog/*!delete
+    # Create a new catalog
+    - krn:reg/us:org/acme-bank:catalog!create
 ```
 
 ```
@@ -42,11 +53,13 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
+    # Retrieve any service from default catalog
+    - krn:reg/us:org/acme-bank:catalog/default-catalog:service/*!retrieve
+    # Update any service in default catalog
     - krn:reg/us:org/acme-bank:catalog/default-catalog:service/*!update
-    # Remove service from catalog
+    # Remove service from default catalog
     - krn:reg/us:org/acme-bank:catalog/default-catalog:service/*!delete
-    # Add a new service to catalog
+    # Add a new service to default catalog
     - krn:reg/us:org/acme-bank:catalog/default-catalog:services!create
 ```
 
@@ -58,10 +71,12 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
-    - krn:reg/us:org/acme-bank:runtime-group/default-rg:/*!update
-    - krn:reg/us:org/acme-bank:runtime-group/default-rg:/*!delete
-    - krn:reg/us:org/acme-bank:runtime-group/default-rg!create
+    # Update an existing runtime
+    - krn:reg/us:org/acme-bank:runtime-group/default-rg:runtime/*!update
+    # Remove runtime from runtime group
+    - krn:reg/us:org/acme-bank:runtime-group/default-rg:runtime/*!delete
+    # Add runtime to runtime group
+    - krn:reg/us:org/acme-bank:runtime-group/default-rg:runtime!create
 ```
 
 In the next section, we will see how this default starting point state of a Konnect organization can be modified to allow for more complex Enterprise organization setups through an example. 
@@ -148,7 +163,7 @@ metadata:
 spec:
   users:
   permissions:
-    - krn:reg/us:org/acme-bank:catalog/common-catalog:service/*!view
+    - krn:reg/us:org/acme-bank:catalog/common-catalog:service/*!retrieve
 ```
 
 ```
@@ -164,7 +179,7 @@ spec:
     # Remove service from catalog
     - krn:reg/us:org/acme-bank:catalog/retail-catalog:service/*!delete
     # Add a new service to catalog
-    - krn:reg/us:org/acme-bank:catalog/retail-catalog:services!create
+    - krn:reg/us:org/acme-bank:catalog/retail-catalog:service!create
 ```
 
 ```
@@ -180,7 +195,7 @@ spec:
     # Remove service from catalog
     - krn:reg/us:org/acme-bank:catalog/investment-catalog:service/*!delete
     # Add a new service to catalog
-    - krn:reg/us:org/acme-bank:catalog/investment-catalog:services!create
+    - krn:reg/us:org/acme-bank:catalog/investment-catalog:service!create
 ```
 
 3 - We then create the role mappings to allow each user logging in to map to the teams we create above appropriately based on the OIDC log-in claims.  
@@ -256,9 +271,9 @@ spec:
   users:
   permissions:
     # Update any service
-    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:/*!update
-    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:/*!delete
-    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg!create
+    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:runtime/*!update
+    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:runtime/*!delete
+    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:runtime!create
 ```
 
 ```
