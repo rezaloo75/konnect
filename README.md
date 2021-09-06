@@ -321,7 +321,7 @@ spec:
   teamName: manage-investment-sandbox
 ```
 
-## Wrap-up and final config to allow for production deployment
+## Summary of setup so far and final config to allow for production deployment
 
 Based on the Service Catalogues, Runtime Groups, Teams, and IdP Mappings we have created so far, we can assert that the following statements stand true for the ACME Konnect account:
 
@@ -368,3 +368,127 @@ spec:
 ```
 
 With this step done, we have completed our configuration of ACME Bank's Konnect organization and all ACME Bank employees, be they from the Retail Team, Investment Team, Operations Team, or general employees not part of any of the above team, can log into Konnect an enjoy a complete service connectivity experience!
+
+## Using Konnect with the setup in place
+
+### As a member of the Retail development team 
+
+Let's begin by seeing the catalogues that I have access to:
+
+```
+GET "https://konnect.konghq.com/api/catalogue
+
+catalogues:
+  common-catalogue:
+  	ID: 1
+  	name: Common
+  	service-count: 0
+  retail-catalogue:
+  	ID: 2
+  	name: Retail 
+  	service-count: 0
+  count: 2
+```
+
+Note that I don't see the finance catalogue, that is because I don't have access to it. Let's now create a an exchange rate service and publish it to the common catalogue:
+
+```
+POST "https://konnect.konghq.com/api/catalogue/1
+
+name: Exchange Rate
+description: Provides the current and historical global exchange rates
+versions:
+	version: v1.0
+	version-description: Initial version of the Exchange Rate service
+```
+
+If we list out the services in the common catalogue we should now see our new Exchange service listed:
+
+```
+GET "https://konnect.konghq.com/api/catalogue/1/service/*
+
+services:
+	ID: 1
+	name: Exchange Rate
+```
+
+```
+GET "https://konnect.konghq.com/api/catalogue/1/service/1
+
+ID: 1
+name: Exchange Rate
+description: Provides the current and historical global exchange rates
+versions:
+	ID: 1
+	name: v1.0
+	version-description: Initial version of the Exchange Rate service
+	config: 
+```
+
+Let's now associate some Kong Gateway proxy configuration with the service:
+
+```
+POST "https://konnect.konghq.com/api/catalogue/1/service/1/version/1/config
+
+config-type: kong
+config-content: 
+        service:
+          connect_timeout: 60000
+          host: l9l76.mocklab.io
+          port: 80
+          protocol: http
+          read_timeout: 60000
+          retries: 5
+          write_timeout: 60000
+          routes:
+          - name: account_id
+            paths:
+            - /id
+            path_handling: v0
+            preserve_host: false
+            protocols:
+            - http
+            regex_priority: 0
+            strip_path: true
+            tags:
+            - these
+            - are
+            - tags
+            - kong
+            https_redirect_status_code: 426
+            request_buffering: true
+            response_buffering: true
+          plugins:
+          - name: key-auth
+            config:
+              anonymous: null
+              hide_credentials: false
+              key_in_body: false
+              key_in_header: true
+              key_in_query: true
+              key_names:
+              - apikey
+              run_on_preflight: true
+```
+
+And then finally, let's deploy the service to our sandbox runtime group. 
+
+```
+GET https://konnect.konghq.com/api/runtime-group
+
+runtime-groups:
+  manage-retail-sandbox:
+  	ID: 1
+  	name: Retail Sandbox
+  	# We will assume that a Kong Gateway runtime instance has been started 
+  	# and associated with this instance already
+  	provisioning-id: TY23910203FG3
+  	runtime-count: 1
+  	service-versions: 0
+```
+
+```
+POST https://konnect.konghq.com/api/runtime-group/1
+
+service-version-id: 1
+```
