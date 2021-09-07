@@ -186,7 +186,7 @@ spec:
 apiVersion: konnect.kong.io/v1
 kind: Team
 metadata:
-  name: manage-retail-services
+  name: manage-investment-services
 spec:
   users:
   permissions:
