@@ -260,7 +260,12 @@ metadata:
 spec:
 ```
 
-2 - Let's now give access for each runtime group by creating the appropriate teams. 
+2 - Let's now give access for each runtime group by creating the appropriate teams. Given an ***update*** permission on a runtime group, a user can:
+
+- Change/refresh the provisioning key. 
+- Change the runtime group name or description.  
+- Add/delete/modify attributes to the runtime group. 
+- Add/delete/modify (common) runtime group configuration. 
 
 ```
 apiVersion: konnect.kong.io/v1
@@ -271,9 +276,7 @@ spec:
   users:
   permissions:
     # Update any service
-    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:runtime/*!update
-    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:runtime/*!delete
-    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:runtime!create
+    - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:/*!update
 ```
 
 ```
@@ -286,8 +289,6 @@ spec:
   permissions:
     # Update any service
     - krn:reg/us:org/acme-bank:runtime-group/investment-sandbox-rg:/*!update
-    - krn:reg/us:org/acme-bank:runtime-group/investment-sandbox-rg:/*!delete
-    - krn:reg/us:org/acme-bank:runtime-group/investment-sandbox-rg!create
 ```
 
 ```
@@ -300,8 +301,6 @@ spec:
   permissions:
     # Update any service
     - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/*!update
-    - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/*!delete
-    - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:!create
 ```
 
 3 - Finally, we can now create new IDP mappings to make sure that the members of the operations team have access to the production runtime group, while the members of the retail and investment dev teams have access to their respective sandbox runtime groups. 
