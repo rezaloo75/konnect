@@ -4,9 +4,9 @@ As a new Konnect account owner, your organization is setup by default as follows
 
 1. A single default ServiceHub Catalogue.
 2. A single default Runtime Manager Runtime Group. 
-3. A set of default Teams described by the table in the [Default Teams](#Default Teams) section. 
+3. A set of default Teams described by the table in the [Default Teams](#default-teams) section. 
 
-In order to customize your accounts configuration for use across your organizational boundaries, you can modify this default setup by adding new ServiceHub catalogues as well as Runtime Manager Runtime Groups, and associating them with custom Konnect Teams. The [Enterprise customization example](#Enterprise customization example) of this document provides an example end-to-end setup steps to demonstrate how you can customize your organization as such.    
+In order to customize your accounts configuration for use across your organizational boundaries, you can modify this default setup by adding new ServiceHub catalogues as well as Runtime Manager Runtime Groups, and associating them with custom Konnect Teams. The [Enterprise customization example](#enterprise-customization-example) of this document provides an example end-to-end setup steps to demonstrate how you can customize your organization as such.    
 
 ## Default Teams
 
