@@ -340,22 +340,18 @@ spec:
 Based on the Service Catalogues, Runtime Groups, Teams, and IdP Mappings we have created so far, we can assert that the following statements stand true for the ACME Konnect account:
 
 1. Users who are in the IdP Retail dev group of ACME Bank are able to create new services in the Retail service catalogue and these services will automatically be available to other members of their team. 
-
 2. Users who are in the IdP Investment dev group of ACME Bank are able to create new services in the Investment service catalogue and these services will automatically be available to other members of their team.
-
 3. Both Retail and Investment dev group members are able to publish their services to the ACME Common service catalogue so that they are available to any ACME Bank user who logs into ServiceHub and looks at the common catalogue.
-
 4. All ACME Bank employees are able to view all services in the Konnect ServiceHub Common catalogue. 
-
-4. Users who are in the IdP Retail dev group of ACME Bank are able to see and access the Retail Sandbox Runtime Group in Runtime Manager. They are thus able to:
-	5.	Start/stop Kong Gateway runtime instances that are associated with this runtime group.
-	6. Deploy their Services from ServiceHub to this runtime group 
-5. Users who are in the IdP Investment dev group of ACME Bank are able to see and access the Investment Sandbox Runtime Group in Runtime Manager. They are thus able to:
-	5.	Start/stop Kong Gateway runtime instances that are associated with this runtime group.
-	6. Deploy their Services from ServiceHub to this runtime group 
-6. Users who are in the ACME Operations IdP group are able to see and access the Production Runtime Group in Runtime Manager. They are thus able to: :
-	5.	Start/stop Kong Gateway runtime instances that are associated with this runtime group.
-	6. Deploy any Service to which they have Deploy access from ServiceHub to this runtime group
+5. Users who are in the IdP Retail dev group of ACME Bank are able to see and access the Retail Sandbox Runtime Group in Runtime Manager. They are thus able to:
+    1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Retail Sandbox Runtime Group to attach a new data plane to this group.
+    2. Deploy their Services from ServiceHub to this runtime group 
+6. Users who are in the IdP Investment dev group of ACME Bank are able to see and access the Investment Sandbox Runtime Group in Runtime Manager. They are thus able to:
+    1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Investment Sandbox Runtime Group to attach a new data plane to this group.
+    2.Deploy their Services from ServiceHub to this runtime group 
+7. Users who are in the ACME Operations IdP group are able to see and access the Production Runtime Group in Runtime Manager. They are thus able to: :
+    1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Production Runtime Group to attach a new data plane to this group.
+    2. Deploy any Service to which they have Deploy access from ServiceHub to this runtime group
 
 Note that at this point, no Operations user has access to any Service Catalogue, hence, to allow for the operations teams to be able to deploy the services to production, we need to setup the following permission to enable point 7.2 above:
 
