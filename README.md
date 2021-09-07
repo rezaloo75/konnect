@@ -333,7 +333,7 @@ Based on the Service Catalogues, Runtime Groups, Teams, and IdP Mappings we have
     1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Retail Sandbox Runtime Group to attach a new data plane to this group.
     2. Deploy their Services from ServiceHub to this runtime group 
 6. Users who are in the IdP Investment dev group of ACME Bank are able to see and access the Investment Sandbox Runtime Group in Runtime Manager. They are thus able to:
-    1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. [Rob] same comment as above
+    1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Investment Sandbox Runtime Group to attach a new data plane to this group.
     2.Deploy their Services from ServiceHub to this runtime group 
 7. Users who are in the ACME Operations IdP group are able to see and access the Production Runtime Group in Runtime Manager. They are thus able to: :
     1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Production Runtime Group to attach a new data plane to this group.
