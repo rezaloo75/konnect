@@ -236,28 +236,46 @@ In this section, we are going to setup the Runtime Manager aspects of Konnect. T
 
 1 - Let's begin by creating the three Runtime Groups. 
 
-```
-apiVersion: konnect.kong.io/v1
-kind: RuntimeGroup
-metadata:
-  name: retail-sandbox-rg
-spec:
-```
-
-```
-apiVersion: konnect.kong.io/v1
-kind: RuntimeGroup
-metadata:
-  name: investment-sandbox-rg
-spec:
+```sh
+curl --request POST \
+  --url https://konnect.mocklab.io/runtimegroups \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "id": "1",
+  "name": "retail-sandbox-rg",
+  "labels": {
+    "environment": "sandbox"
+  },
+  "config": {}
+}'
 ```
 
+```sh
+curl --request POST \
+  --url https://konnect.mocklab.io/runtimegroups \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "id": "2",
+  "name": "investment-sandbox-rg",
+  "labels": {
+    "environment": "sandbox"
+  },
+  "config": {}
+}'
 ```
-apiVersion: konnect.kong.io/v1
-kind: RuntimeGroup
-metadata:
-  name: acme-production-rg
-spec:
+
+```sh
+curl --request POST \
+  --url https://konnect.mocklab.io/runtimegroups \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "id": "3",
+  "name": "acme-production-rg",
+  "labels": {
+    "environment": "production"
+  },
+  "config": {}
+}'
 ```
 
 2 - Let's now give access for each runtime group by creating the appropriate teams. Given an ***update*** permission on a runtime group, a user can:
