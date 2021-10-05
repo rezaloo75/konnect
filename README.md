@@ -234,6 +234,8 @@ spec:
 
 In this section, we are going to setup the Runtime Manager aspects of Konnect. The goal will be to allow each of the two application teams at ACME Bank, that is the Retail and Investment teams, to have their own Runtime Group (that is a group of Kong Gateways that they control) as a sandbox for deploying their Services, while having a common "Production" Runtime Group that is designated for the deployment of services from both the Retail and Investment teams.
 
+__Note:__ Runtime Groups will be an Enterprise tier feature only and therefore their usage limited to our Enterprise user base. Of this user base, we expect that a single organization will have on average around 6-12 runtime groups and no more than 100 or so at max. 
+
 1 - Let's begin by creating the three Runtime Groups. 
 
 ```sh
@@ -363,15 +365,15 @@ Based on the Service Catalogues, Runtime Groups, Teams, and IdP Mappings we have
 4. All ACME Bank employees are able to view all services in the Konnect ServiceHub Common catalogue. 
 5. Users who are in the IdP Retail dev group of ACME Bank are able to see and access the Retail Sandbox Runtime Group in Runtime Manager. They are thus able to:
     1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Retail Sandbox Runtime Group to attach a new data plane to this group.
-    2. Deploy their Services from ServiceHub to this runtime group 
+    2. Associate subsets of configuration from this runtime group with the services in the Service Catalogues that they have access to, which for them is the Retail and Common service catalogues.  
 6. Users who are in the IdP Investment dev group of ACME Bank are able to see and access the Investment Sandbox Runtime Group in Runtime Manager. They are thus able to:
     1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Investment Sandbox Runtime Group to attach a new data plane to this group.
-    2.Deploy their Services from ServiceHub to this runtime group 
+    2. Associate subsets of configuration from this runtime group with the services in the Service Catalogues that they have access to, which for them is the Investment and Common service catalogues.   
 7. Users who are in the ACME Operations IdP group are able to see and access the Production Runtime Group in Runtime Manager. They are thus able to: :
     1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Production Runtime Group to attach a new data plane to this group.
-    2. Deploy any Service to which they have Deploy access from ServiceHub to this runtime group
+    2. Associate subsets of configuration from this runtime group with the services in the Service Catalogues that they have access to, which for them is the Investment, Retailm and Common service catalogues.
 
-Note that at this point, no Operations user has access to any Service Catalogue, hence, to allow for the operations teams to be able to deploy the services to production, we need to setup the following permission to enable point 7.2 above:
+Note that at this point, no Operations user has access to any Service Catalogue, hence, to allow for the operations teams to be able to associate configuration from the production runtime group to ACME's services, we need to setup the following permission to enable point 7.2 above:
 
 ```
 apiVersion: konnect.kong.io/v1
@@ -453,12 +455,28 @@ versions:
 	config: 
 ```
 
-Let's now associate some Kong Gateway proxy configuration with the service:
+Let's now associate some Kong Gateway proxy configuration with the retail sandbox runtime group:
 
 ```
-POST "https://konnect.konghq.com/api/catalogue/1/service/1/version/1/config
+GET https://konnect.konghq.com/api/runtime-group
+
+runtime-groups:
+  manage-retail-sandbox:
+  	ID: 1
+  	name: Retail Sandbox
+  	# We will assume that a Kong Gateway runtime instance has been started 
+  	# and associated with this instance already
+  	provisioning-id: TY23910203FG3
+  	runtime-count: 1
+  	service-versions: 0
+```
+
+```
+POST https://konnect.konghq.com/api/runtime-group/1/configuration
 
 config-type: kong
+associated-service: 1
+associated-service-catalogue: 1
 config-content: 
         service:
           connect_timeout: 60000
@@ -497,26 +515,5 @@ config-content:
               key_names:
               - apikey
               run_on_preflight: true
-```
 
-And then finally, let's deploy the service to our sandbox runtime group. 
-
-```
-GET https://konnect.konghq.com/api/runtime-group
-
-runtime-groups:
-  manage-retail-sandbox:
-  	ID: 1
-  	name: Retail Sandbox
-  	# We will assume that a Kong Gateway runtime instance has been started 
-  	# and associated with this instance already
-  	provisioning-id: TY23910203FG3
-  	runtime-count: 1
-  	service-versions: 0
-```
-
-```
-POST https://konnect.konghq.com/api/runtime-group/1
-
-service-version-id: 1
 ```
