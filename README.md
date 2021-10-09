@@ -666,7 +666,7 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
+    # Update any runtime group configuration
     - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:/*!update
 ```
 
@@ -678,7 +678,7 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
+    # Update any runtime group configuration
     - krn:reg/us:org/acme-bank:runtime-group/investment-sandbox-rg:/*!update
 ```
 
@@ -690,9 +690,135 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
+    # Update any runtime group configuration
     - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/*!update
 ```
+
+## Allow User to Configure Kong Services in a Runtime group
+
+In order to be able to Configure a new Kong Service or update an existing Kong Servig in a Kong Gateway Runtime group, a user need to be grented permission to the Kong Service resource of a specific runtime group.
+
+
+
+```
+apiVersion: konnect.kong.io/v1
+kind: Team
+metadata:
+  name: manage-production-services
+spec:
+  users:
+  permissions:
+    # Update any service
+    - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/service/*!update
+```
+
+API Definition
+`openapi: 3.0.0
+info:
+  title: sample API for https://github.com/rezaloo75/konnect usecase
+  description: this contains a subset of Konnect API needed to support the usecases described at https://github.com/rezaloo75/konnect 
+  version: 0.0.1
+paths:
+  /runtimegroups/runtimegroupid/services:
+    get:
+      tags:
+        - Services
+      description: Get details about a service
+      responses:
+        '200':
+          description: Service was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'             
+        '404':
+          description: No such service found
+    post:
+      tags:
+        - Services
+      description: Create a service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Service'
+      responses:
+        '201':
+          description: Service was created
+   /runtimegroups/runtimegroupid//services/{id}:          
+    patch:
+      tags:
+        - Services
+      description: Update a service
+      parameters:
+        - name: id
+          in: path
+          description: service id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Service was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service' 
+    delete:
+      tags:
+        - Services
+      description: delete a service
+      operationId: deleteServices
+      parameters:
+        - name: id
+          in: path
+          description: service id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+
+components:
+  schemas:
+    Service:
+      properties:
+              id:
+                type: string
+              created_at:
+                type: number
+              updated_at:
+                type: number
+              connect_timeout:
+                type: integer
+              protocol:
+                type: string
+              host:
+                type: string
+              port:
+                type: number
+              path:
+                type: string
+              name:
+                type: string
+              retries:
+                type: number
+              read_timeout:
+                type: number
+              write_timeout:
+                type: number
+```
+
+## Link Kong Service to Catalog Items
+
+Catalog Items, in addition to their own data/metadata, can also contains links to Kong Services.
+This link are store following the KRN URI representing the Kong Service/s that are related to a Catalog Item.
+
+example:
+
+`krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/service/mybestserviceever`
 
 
 ## Summary of setup so far and final config to allow for production deployment
@@ -725,16 +851,6 @@ spec:
   permissions:
     # Have access to any service version's configuration 
     - krn:reg/us:org/acme-bank:catalog/*:service/*!retrieve
-```
-
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-acme-operations
-spec:
-  groupName: acme-operations
-  teamName: deploy-all-services
 ```
 
 With this step done, we have completed our configuration of ACME Bank's Konnect organization and all ACME Bank employees, be they from the Retail Team, Investment Team, Operations Team, or general employees not part of any of the above team, can log into Konnect an enjoy a complete service connectivity experience!
