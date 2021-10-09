@@ -713,7 +713,8 @@ spec:
 ```
 
 API Definition
-`openapi: 3.0.0
+```
+openapi: 3.0.0
 info:
   title: sample API for https://github.com/rezaloo75/konnect usecase
   description: this contains a subset of Konnect API needed to support the usecases described at https://github.com/rezaloo75/konnect 
