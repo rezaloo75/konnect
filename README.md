@@ -79,6 +79,396 @@ spec:
     - krn:reg/us:org/acme-bank:runtime-group/default-rg:runtime!create
 ```
 
+####  Api Definition
+<details>
+  <summary>Option 1 - Flat team </summary>
+	
+```
+openapi: 3.0.0
+info:
+  title: sample API for https://github.com/rezaloo75/konnect usecase
+  description: this contains a subset of Konnect API needed to support the usecases described at https://github.com/rezaloo75/konnect 
+  version: 0.0.1
+paths:
+  /teams:
+    get:
+      summary: get all teams
+      responses:
+        '200':
+          description: paginated list of teams
+    post:
+      summary: craete a team
+      description: this API allows to create a new team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses: 
+        '200':
+          description: a message confirming the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+  /teams/{id}:
+    get:
+      summary: get a team
+      parameters:
+        - name: id
+          in: path
+          description: team id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: a team
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/Team'
+      
+    patch:
+      summary: update a team
+      description: this API allows to update a team
+      parameters:
+        - name: id
+          in: path
+          description: team id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses: 
+        '200':
+          description: a message confirming the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      summary: delete a team
+      parameters:
+        - name: id
+          in: path
+          description: team id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: confirmation that the teamw was delited.
+
+components:
+  schemas:
+    KRN:
+      type: string
+      format: KRN
+      description: Kong resource notations URI
+    Permission:
+      type: object
+      description: "TODO: wildcard support still need to be defined"
+      properties:
+        krn:
+           $ref: '#/components/schemas/KRN'
+        action:
+          type: string
+          enum: [create, update, delete, etc]
+        
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: faf67ef4-7d2d-474d-9f1c-08e996cbcf4c
+        name:
+          type: string
+          example: Administrator
+        description:
+          type: string
+          example: This is the team that allows you to do anything 
+        created_at: 
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2020-07-21T17:32:28Z
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission' 
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/KRN'
+      # Both properties are required
+      required:  
+        - id
+        - name	
+```	
+</details>
+
+<details>
+  <summary>Option 2 - Users / Groups / Roles/ Permission </summary>
+
+```
+openapi: 3.0.0
+info:
+  title: sample API for https://github.com/rezaloo75/konnect usecase
+  description: this contains a subset of Konnect API needed to support the usecases described at https://github.com/rezaloo75/konnect 
+  version: 0.0.1
+paths:
+  /groups:
+    get:
+      summary: get all user groups
+      responses:
+        '200':
+          description: paginated list of groups
+    post:
+      summary: craete a group
+      description: this API allows to create a new group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+      responses: 
+        '200':
+          description: a message confirming the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+  /group/{id}:
+    get:
+      summary: get a group
+      parameters:
+        - name: id
+          in: path
+          description: group id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: a group
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/Group'
+      
+    patch:
+      summary: update a group
+      description: this API allows to update a group
+      parameters:
+        - name: id
+          in: path
+          description: group id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+      responses: 
+        '200':
+          description: a message confirming the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      summary: delete a group
+      parameters:
+        - name: id
+          in: path
+          description: group id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: confirmation that the group was delited.
+          
+  /roles:
+    get:
+      summary: get all roles
+      responses:
+        '200':
+          description: paginated list of roles
+    post:
+      summary: craete a role
+      description: this API allows to create a new role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses: 
+        '200':
+          description: a message confirming the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+  /role/{id}:
+    get:
+      summary: get a role
+      parameters:
+        - name: id
+          in: path
+          description: role id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: a role
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/Role'
+      
+    patch:
+      summary: update a role
+      description: this API allows to update a role
+      parameters:
+        - name: id
+          in: path
+          description: role id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses: 
+        '200':
+          description: a message confirming the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      summary: delete a role
+      parameters:
+        - name: id
+          in: path
+          description: role id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: confirmation that the role was delited.
+
+
+components:
+  schemas:
+    KRN:
+      type: string
+      format: KRN
+      description: Kong resource notations URI
+    Permission:
+      type: object
+      description: "TODO: wildcard support still need to be defined"
+      properties:
+        krn:
+           $ref: '#/components/schemas/KRN'
+        action:
+          type: string
+          enum: [create, update, delete, etc]
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: faf67ef4-7d2d-474d-9f1c-08e996cbcf4c
+        name:
+          type: string
+          example: AdministratorGroup
+        description:
+          type: string
+          example: This is the group that all administrator belongs to
+        created_at: 
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2020-07-21T17:32:28Z
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/KRN' 
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/KRN'
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: faf67ef4-7d2d-474d-9f1c-08e996cbcf4c
+        name:
+          type: string
+          example: AdministratorRole
+        description:
+          type: string
+          example: This is the Role that describe all Permission  
+        created_at: 
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2020-07-21T17:32:28Z
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission' 
+      # Both properties are required
+      required:  
+        - id
+        - name
+```
+	
+</details>
+
+***
+
 In the next section, we will see how this default starting point state of a Konnect organization can be modified to allow for more complex Enterprise organization setups through an example. 
 
 ***_Open Question_***: _This setup does not allow for the more fine grained Service Developer and Service Page Editor roles we have today in Konnect. We need to conclude on how to address that, if at all needed._  
