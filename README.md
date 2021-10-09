@@ -572,35 +572,34 @@ spec:
 
 3 - We then create the role mappings to allow each user logging in to map to the teams we create above appropriately based on the OIDC log-in claims.  
 
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-acme-to-team-view-common-services
-spec:
-  groupName: acme
-  teamName: view-common-services
-```
+<details>
+  <summary>Option 2 - Identity Only SSO </summary>
+	
+	If SSO is used for `only` Identity federation, it make no sense to map IdP user to teams.
+	Team management will have to be handle within connect. Ence nothing else need to be done here.
+	
+</details>
 
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-retai-dev
-spec:
-  groupName: retail-dev
-  teamName: manage-retail-services
-```
+<details>
+  <summary>Option 2 - Role assumption </summary>
+	
+	If SSO is used for both Identity and Role federation, than we should build (Teams Option 2) and add support for "role assumption".
+	
+	Concretely this means that:
+	
+	- an OIDC/SAML integration will map to a Role or Roles
+	
+	- an OIDC/SAML integration will map conditionally to a Role/Roles based on a custom OIDC claim or SAML assertion
+	
+	- (if multiple roles are supported, the user will be prompted to pick the role that should be assumed for the session)
+	
+	API definition will look very similar to
+	
+	https://konnect.konghq.com/docs/#/idps%2F%3Aidp_id%2Fgroup_mappings/getMany
+	
+</details>
 
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-investment-dev
-spec:
-  groupName: investment-dev
-  teamName: manage-ivestment-services
-```
+
 
 ## Setting up Runtime Manager permissions
 
@@ -612,7 +611,7 @@ __Note:__ Runtime Groups will be an Enterprise tier feature only and therefore t
 
 ```sh
 curl --request POST \
-  --url https://konnect.mocklab.io/runtimegroups \
+  --url https://konnect.konghq.com/runtimegroups \
   --header 'Content-Type: application/json' \
   --data '{
   "id": "1",
@@ -626,7 +625,7 @@ curl --request POST \
 
 ```sh
 curl --request POST \
-  --url https://konnect.mocklab.io/runtimegroups \
+  --url https://konnect.konghq.com/runtimegroups \
   --header 'Content-Type: application/json' \
   --data '{
   "id": "2",
@@ -640,7 +639,7 @@ curl --request POST \
 
 ```sh
 curl --request POST \
-  --url https://konnect.mocklab.io/runtimegroups \
+  --url https://konnect.konghq.com/runtimegroups \
   --header 'Content-Type: application/json' \
   --data '{
   "id": "3",
