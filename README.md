@@ -860,24 +860,22 @@ With this step done, we have completed our configuration of ACME Bank's Konnect 
 
 ### As a member of the Retail development team 
 
-Let's begin by seeing the catalogues that I have access to:
+Let's begin by seeing the catalogue items that I have access to:
 
 ```
 GET "https://konnect.konghq.com/api/catalogue
 
-catalogues:
-  common-catalogue:
+catalogue-items:
+  common-item:
   	ID: 1
   	name: Common
-  	service-count: 0
-  retail-catalogue:
+  retail-item:
   	ID: 2
   	name: Retail 
-  	service-count: 0
   count: 2
 ```
 
-Note that I don't see the finance catalogue, that is because I don't have access to it. Let's now create a an exchange rate service and publish it to the common catalogue:
+Note that I don't see the finance catalog Item/s, that is because I don't have access to it. Let's now create a an exchange rate service and publish it to the catalogue:
 
 ```
 POST "https://konnect.konghq.com/api/catalogue/1
@@ -889,10 +887,10 @@ versions:
 	version-description: Initial version of the Exchange Rate service
 ```
 
-If we list out the services in the common catalogue we should now see our new Exchange service listed:
+If we list out the services in the catalogue we should now see our new Exchange service listed:
 
 ```
-GET "https://konnect.konghq.com/api/catalogue/1/service/*
+GET "https://konnect.konghq.com/api/catalogue/*
 
 services:
 	ID: 1
@@ -900,7 +898,7 @@ services:
 ```
 
 ```
-GET "https://konnect.konghq.com/api/catalogue/1/service/1
+GET https://konnect.konghq.com/api/catalogue/1/
 
 ID: 1
 name: Exchange Rate
@@ -929,13 +927,12 @@ runtime-groups:
 ```
 
 ```
-POST https://konnect.konghq.com/api/runtime-group/1/configuration
+GET https://konnect.konghq.com/api/runtime-group/1/services/1
 
-config-type: kong
-associated-service: 1
-associated-service-catalogue: 1
+config-type: kong-service
 config-content: 
         service:
+	  id: 1
           connect_timeout: 60000
           host: l9l76.mocklab.io
           port: 80
@@ -974,3 +971,8 @@ config-content:
               run_on_preflight: true
 
 ```
+
+PATCH https://konnect.konghq.com/api/catalogue/1/
+
+{ "op": "add", "path": "/kong-services", "value": { "krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/service/1" }
+	
