@@ -518,32 +518,7 @@ metadata:
 
 We start by creating four teams as follows.
 
-
-1 - Let's begin by creating the three types of service catalogues, each associated with one of the service scopes we described in the previous section. 
-
-```
-apiVersion: konnect.kong.io/v1
-kind: Catalog
-metadata:
-  name: common-catalog
-spec:
-```
-```
-apiVersion: konnect.kong.io/v1
-kind: Catalog
-metadata:
-  name: retail-catalog
-spec:
-```
-```
-apiVersion: konnect.kong.io/v1
-kind: Catalog
-metadata:
-  name: investment-catalog
-spec:
-```
-
-2 - Now let's create three teams, each of which is designed to allow the permissions to the common, investment, and retail service catalogues respectively. 
+1 - Let's create three teams, each of which is designed to allow the permissions to the common, investment, and retail service catalogues respectively. 
 
 ```
 apiVersion: konnect.kong.io/v1
@@ -553,7 +528,10 @@ metadata:
 spec:
   users:
   permissions:
-    - krn:reg/us:org/acme-bank:catalog/common-catalog:service/*!retrieve
+    # List service in the catalog
+    - krn:reg/us:org/acme-bank:catalog/*!list
+     # Read common service in the catalog
+    - krn:reg/us:org/acme-bank:catalog/common-service*!retrieve
 ```
 
 ```
@@ -564,12 +542,14 @@ metadata:
 spec:
   users:
   permissions:
+    # List service in the catalog
+    - krn:reg/us:org/acme-bank:catalog/*!list
     # Update any service
-    - krn:reg/us:org/acme-bank:catalog/retail-catalog:service/*!update
+    - krn:reg/us:org/acme-bank:catalog/retail-service*!update
     # Remove service from catalog
-    - krn:reg/us:org/acme-bank:catalog/retail-catalog:service/*!delete
+    - krn:reg/us:org/acme-bank:catalog/retail-service*!delete
     # Add a new service to catalog
-    - krn:reg/us:org/acme-bank:catalog/retail-catalog:service!create
+    - krn:reg/us:org/acme-bank:catalog/retail-service*!create
 ```
 
 ```
@@ -580,12 +560,14 @@ metadata:
 spec:
   users:
   permissions:
+    # List service in the catalog
+    - krn:reg/us:org/acme-bank:catalog/*!list
     # Update any service
-    - krn:reg/us:org/acme-bank:catalog/investment-catalog:service/*!update
+    - krn:reg/us:org/acme-bank:catalog/investment-service*!update
     # Remove service from catalog
-    - krn:reg/us:org/acme-bank:catalog/investment-catalog:service/*!delete
+    - krn:reg/us:org/acme-bank:catalog/investment-service*!delete
     # Add a new service to catalog
-    - krn:reg/us:org/acme-bank:catalog/investment-catalog:service!create
+    - krn:reg/us:org/acme-bank:catalog/investment-service*!create
 ```
 
 3 - We then create the role mappings to allow each user logging in to map to the teams we create above appropriately based on the OIDC log-in claims.  
