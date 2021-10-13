@@ -79,6 +79,207 @@ spec:
     - krn:reg/us:org/acme-bank:runtime-group/default-rg:runtime!create
 ```
 
+####  Teams Api Definition
+```
+openapi: 3.0.0
+info:
+  title: sample API for https://github.com/rezaloo75/konnect usecase
+  description: this contains a subset of Konnect API needed to support the usecases described at https://github.com/rezaloo75/konnect 
+  version: 0.0.1
+paths:
+  /teams:
+    get:
+      summary: get all teams
+      responses:
+        '200':
+          description: paginated list of teams
+    post:
+      summary: craete a team
+      description: this API allows to create a new team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses: 
+        '200':
+          description: a message confirming the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+  /teams/{id}:
+    get:
+      summary: get a team
+      parameters:
+        - name: id
+          in: path
+          description: team id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: a team
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/Team'
+      
+    patch:
+      summary: update a team
+      description: this API allows to update a team
+      parameters:
+        - name: id
+          in: path
+          description: team id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses: 
+        '200':
+          description: a message confirming the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      summary: delete a team
+      parameters:
+        - name: id
+          in: path
+          description: team id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: confirmation that the teamw was delited.
+  /teams/{team_id}/runtime_group/{rg_id}:
+    put:
+      summary: assing permission to a runtime group
+      parameters:
+        - name: team_id
+          in: path
+          description: team id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: rg_id
+          in: path
+          description: runtime group id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                enum: [read, write, admin, etc]
+      responses:
+        '201':
+          description: confirmation that the teamw was delited.
+  /teams/{team_id}/donuts/{d_id}:
+    put:
+      summary: assing permission to a donut
+      parameters:
+        - name: team_id
+          in: path
+          description: team id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: d_id
+          in: path
+          description: donut id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                enum: [read, write, admin, etc]
+      responses:
+        '201':
+          description: confirmation that the teamw was delited.
+components:
+  schemas:
+    KRN:
+      type: string
+      format: KRN
+      description: Kong resource notations URI
+    Permission:
+      type: object
+      description: "TODO: wildcard support still need to be defined"
+      properties:
+        krn:
+           $ref: '#/components/schemas/KRN'
+        action:
+          type: string
+          enum: [create, update, delete, etc]
+        
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: faf67ef4-7d2d-474d-9f1c-08e996cbcf4c
+        name:
+          type: string
+          example: Administrator
+        description:
+          type: string
+          example: This is the team that allows you to do anything 
+        created_at: 
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2020-07-21T17:32:28Z
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission' 
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/KRN'
+      # Both properties are required
+      required:  
+        - id
+        - name		
+```	
+	
+</details>
+
+***
+
 In the next section, we will see how this default starting point state of a Konnect organization can be modified to allow for more complex Enterprise organization setups through an example. 
 
 ***_Open Question_***: _This setup does not allow for the more fine grained Service Developer and Service Page Editor roles we have today in Konnect. We need to conclude on how to address that, if at all needed._  
@@ -128,32 +329,7 @@ metadata:
 
 We start by creating four teams as follows.
 
-
-1 - Let's begin by creating the three types of service catalogues, each associated with one of the service scopes we described in the previous section. 
-
-```
-apiVersion: konnect.kong.io/v1
-kind: Catalog
-metadata:
-  name: common-catalog
-spec:
-```
-```
-apiVersion: konnect.kong.io/v1
-kind: Catalog
-metadata:
-  name: retail-catalog
-spec:
-```
-```
-apiVersion: konnect.kong.io/v1
-kind: Catalog
-metadata:
-  name: investment-catalog
-spec:
-```
-
-2 - Now let's create three teams, each of which is designed to allow the permissions to the common, investment, and retail service catalogues respectively. 
+1 - Let's create three teams, each of which is designed to allow the permissions to the common, investment, and retail service catalogues respectively. 
 
 ```
 apiVersion: konnect.kong.io/v1
@@ -163,7 +339,10 @@ metadata:
 spec:
   users:
   permissions:
-    - krn:reg/us:org/acme-bank:catalog/common-catalog:service/*!retrieve
+    # List service in the catalog
+    - krn:reg/us:org/acme-bank:catalog/*!list
+     # Read common service in the catalog
+    - krn:reg/us:org/acme-bank:catalog/common-service*!retrieve
 ```
 
 ```
@@ -174,12 +353,14 @@ metadata:
 spec:
   users:
   permissions:
+    # List service in the catalog
+    - krn:reg/us:org/acme-bank:catalog/*!list
     # Update any service
-    - krn:reg/us:org/acme-bank:catalog/retail-catalog:service/*!update
+    - krn:reg/us:org/acme-bank:catalog/retail-service*!update
     # Remove service from catalog
-    - krn:reg/us:org/acme-bank:catalog/retail-catalog:service/*!delete
+    - krn:reg/us:org/acme-bank:catalog/retail-service*!delete
     # Add a new service to catalog
-    - krn:reg/us:org/acme-bank:catalog/retail-catalog:service!create
+    - krn:reg/us:org/acme-bank:catalog/retail-service*!create
 ```
 
 ```
@@ -190,45 +371,46 @@ metadata:
 spec:
   users:
   permissions:
+    # List service in the catalog
+    - krn:reg/us:org/acme-bank:catalog/*!list
     # Update any service
-    - krn:reg/us:org/acme-bank:catalog/investment-catalog:service/*!update
+    - krn:reg/us:org/acme-bank:catalog/investment-service*!update
     # Remove service from catalog
-    - krn:reg/us:org/acme-bank:catalog/investment-catalog:service/*!delete
+    - krn:reg/us:org/acme-bank:catalog/investment-service*!delete
     # Add a new service to catalog
-    - krn:reg/us:org/acme-bank:catalog/investment-catalog:service!create
+    - krn:reg/us:org/acme-bank:catalog/investment-service*!create
 ```
 
 3 - We then create the role mappings to allow each user logging in to map to the teams we create above appropriately based on the OIDC log-in claims.  
 
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-acme-to-team-view-common-services
-spec:
-  groupName: acme
-  teamName: view-common-services
-```
+<details>
+  <summary>Option 2 - Identity Only SSO </summary>
+	
+	If SSO is used for `only` Identity federation, it make no sense to map IdP user to teams.
+	Team management will have to be handle within connect. Ence nothing else need to be done here.
+	
+</details>
 
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-retai-dev
-spec:
-  groupName: retail-dev
-  teamName: manage-retail-services
-```
+<details>
+  <summary>Option 2 - Role assumption </summary>
+	
+	If SSO is used for both Identity and Role federation, than we should build (Teams Option 2) and add support for "role assumption".
+	
+	Concretely this means that:
+	
+	- an OIDC/SAML integration will map to a Role or Roles
+	
+	- an OIDC/SAML integration will map conditionally to a Role/Roles based on a custom OIDC claim or SAML assertion
+	
+	- (if multiple roles are supported, the user will be prompted to pick the role that should be assumed for the session)
+	
+	API definition will look very similar to
+	
+	https://konnect.konghq.com/docs/#/idps%2F%3Aidp_id%2Fgroup_mappings/getMany
+	
+</details>
 
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-investment-dev
-spec:
-  groupName: investment-dev
-  teamName: manage-ivestment-services
-```
+
 
 ## Setting up Runtime Manager permissions
 
@@ -240,7 +422,7 @@ __Note:__ Runtime Groups will be an Enterprise tier feature only and therefore t
 
 ```sh
 curl --request POST \
-  --url https://konnect.mocklab.io/runtimegroups \
+  --url https://konnect.konghq.com/runtimegroups \
   --header 'Content-Type: application/json' \
   --data '{
   "id": "1",
@@ -254,7 +436,7 @@ curl --request POST \
 
 ```sh
 curl --request POST \
-  --url https://konnect.mocklab.io/runtimegroups \
+  --url https://konnect.konghq.com/runtimegroups \
   --header 'Content-Type: application/json' \
   --data '{
   "id": "2",
@@ -268,7 +450,7 @@ curl --request POST \
 
 ```sh
 curl --request POST \
-  --url https://konnect.mocklab.io/runtimegroups \
+  --url https://konnect.konghq.com/runtimegroups \
   --header 'Content-Type: application/json' \
   --data '{
   "id": "3",
@@ -295,7 +477,7 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
+    # Update any runtime group configuration
     - krn:reg/us:org/acme-bank:runtime-group/retail-sandbox-rg:/*!update
 ```
 
@@ -307,7 +489,7 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
+    # Update any runtime group configuration
     - krn:reg/us:org/acme-bank:runtime-group/investment-sandbox-rg:/*!update
 ```
 
@@ -319,50 +501,146 @@ metadata:
 spec:
   users:
   permissions:
-    # Update any service
+    # Update any runtime group configuration
     - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/*!update
 ```
 
-3 - Finally, we can now create new IDP mappings to make sure that the members of the operations team have access to the production runtime group, while the members of the retail and investment dev teams have access to their respective sandbox runtime groups. 
+## Allow User to Configure Kong Services in a Runtime group
+
+In order to be able to Configure a new Kong Service or update an existing Kong Servig in a Kong Gateway Runtime group, a user need to be grented permission to the Kong Service resource of a specific runtime group.
+
+
 
 ```
 apiVersion: konnect.kong.io/v1
-kind: IDPMapping
+kind: Team
 metadata:
-  name: group-acme-operations
+  name: manage-production-services
 spec:
-  groupName: acme-operations
-  teamName: manage-production
+  users:
+  permissions:
+    # Update any service
+    - krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/service/*!update
 ```
 
+API Definition
 ```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-retai-ops
-spec:
-  groupName: retail-dev
-  teamName: manage-retail-sandbox
+openapi: 3.0.0
+info:
+  title: sample API for https://github.com/rezaloo75/konnect usecase
+  description: this contains a subset of Konnect API needed to support the usecases described at https://github.com/rezaloo75/konnect 
+  version: 0.0.1
+paths:
+  /runtimegroups/runtimegroupid/services:
+    get:
+      tags:
+        - Services
+      description: Get details about a service
+      responses:
+        '200':
+          description: Service was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'             
+        '404':
+          description: No such service found
+    post:
+      tags:
+        - Services
+      description: Create a service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Service'
+      responses:
+        '201':
+          description: Service was created
+   /runtimegroups/runtimegroupid//services/{id}:          
+    patch:
+      tags:
+        - Services
+      description: Update a service
+      parameters:
+        - name: id
+          in: path
+          description: service id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Service was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service' 
+    delete:
+      tags:
+        - Services
+      description: delete a service
+      operationId: deleteServices
+      parameters:
+        - name: id
+          in: path
+          description: service id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+
+components:
+  schemas:
+    Service:
+      properties:
+              id:
+                type: string
+              created_at:
+                type: number
+              updated_at:
+                type: number
+              connect_timeout:
+                type: integer
+              protocol:
+                type: string
+              host:
+                type: string
+              port:
+                type: number
+              path:
+                type: string
+              name:
+                type: string
+              retries:
+                type: number
+              read_timeout:
+                type: number
+              write_timeout:
+                type: number
 ```
 
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-investment-ops
-spec:
-  groupName: investment-dev
-  teamName: manage-investment-sandbox
-```
+## Link Kong Service to Catalog Items
+
+Catalog Items, in addition to their own data/metadata, can also contains links to Kong Services.
+This link are store following the KRN URI representing the Kong Service/s that are related to a Catalog Item.
+
+example:
+
+`krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/service/mybestserviceever`
+
 
 ## Summary of setup so far and final config to allow for production deployment
 
 Based on the Service Catalogues, Runtime Groups, Teams, and IdP Mappings we have created so far, we can assert that the following statements stand true for the ACME Konnect account:
 
-1. Users who are in the IdP Retail dev group of ACME Bank are able to create new services in the Retail service catalogue and these services will automatically be available to other members of their team. 
-2. Users who are in the IdP Investment dev group of ACME Bank are able to create new services in the Investment service catalogue and these services will automatically be available to other members of their team.
-3. Both Retail and Investment dev group members are able to publish their services to the ACME Common service catalogue so that they are available to any ACME Bank user who logs into ServiceHub and looks at the common catalogue.
-4. All ACME Bank employees are able to view all services in the Konnect ServiceHub Common catalogue. 
+1. Users who are in the IdP Retail dev group of ACME Bank are able to create new services using the `startwith retail-service` naming convention in the catalogue and these services will automatically be available to other members of their team. 
+2. Users who are in the IdP Investment dev group of ACME Bank are able to create new services using the `startwith retail-service` naming convention in the Investment service catalogue and these services will automatically be available to other members of their team.
+~~3. Both Retail and Investment dev group members are able to publish their services to the ACME Common service catalogue so that they are available to any ACME Bank user who logs into ServiceHub and looks at the common catalogue.
+4. All ACME Bank employees are able to view all services in the Konnect Catalogue that use the `common` naming convention. 
 5. Users who are in the IdP Retail dev group of ACME Bank are able to see and access the Retail Sandbox Runtime Group in Runtime Manager. They are thus able to:
     1. Start/stop Kong Gateway runtime instances that are associated with this runtime group. In practical terms this means these users may obtain a runtime group provisioning key for the Retail Sandbox Runtime Group to attach a new data plane to this group.
     2. Associate subsets of configuration from this runtime group with the services in the Service Catalogues that they have access to, which for them is the Retail and Common service catalogues.  
@@ -387,40 +665,28 @@ spec:
     - krn:reg/us:org/acme-bank:catalog/*:service/*!retrieve
 ```
 
-```
-apiVersion: konnect.kong.io/v1
-kind: IDPMapping
-metadata:
-  name: group-acme-operations
-spec:
-  groupName: acme-operations
-  teamName: deploy-all-services
-```
-
 With this step done, we have completed our configuration of ACME Bank's Konnect organization and all ACME Bank employees, be they from the Retail Team, Investment Team, Operations Team, or general employees not part of any of the above team, can log into Konnect an enjoy a complete service connectivity experience!
 
 ## Using Konnect with the setup in place
 
 ### As a member of the Retail development team 
 
-Let's begin by seeing the catalogues that I have access to:
+Let's begin by seeing the catalogue items that I have access to:
 
 ```
 GET "https://konnect.konghq.com/api/catalogue
 
-catalogues:
-  common-catalogue:
+catalogue-items:
+  common-item:
   	ID: 1
   	name: Common
-  	service-count: 0
-  retail-catalogue:
+  retail-item:
   	ID: 2
   	name: Retail 
-  	service-count: 0
   count: 2
 ```
 
-Note that I don't see the finance catalogue, that is because I don't have access to it. Let's now create a an exchange rate service and publish it to the common catalogue:
+Note that I don't see the finance catalog Item/s, that is because I don't have access to it. Let's now create a an exchange rate service and publish it to the catalogue:
 
 ```
 POST "https://konnect.konghq.com/api/catalogue/1
@@ -432,10 +698,10 @@ versions:
 	version-description: Initial version of the Exchange Rate service
 ```
 
-If we list out the services in the common catalogue we should now see our new Exchange service listed:
+If we list out the services in the catalogue we should now see our new Exchange service listed:
 
 ```
-GET "https://konnect.konghq.com/api/catalogue/1/service/*
+GET "https://konnect.konghq.com/api/catalogue/*
 
 services:
 	ID: 1
@@ -443,7 +709,7 @@ services:
 ```
 
 ```
-GET "https://konnect.konghq.com/api/catalogue/1/service/1
+GET https://konnect.konghq.com/api/catalogue/1/
 
 ID: 1
 name: Exchange Rate
@@ -472,13 +738,12 @@ runtime-groups:
 ```
 
 ```
-POST https://konnect.konghq.com/api/runtime-group/1/configuration
+GET https://konnect.konghq.com/api/runtime-group/1/services/1
 
-config-type: kong
-associated-service: 1
-associated-service-catalogue: 1
+config-type: kong-service
 config-content: 
         service:
+	  id: 1
           connect_timeout: 60000
           host: l9l76.mocklab.io
           port: 80
@@ -517,3 +782,8 @@ config-content:
               run_on_preflight: true
 
 ```
+
+PATCH https://konnect.konghq.com/api/catalogue/1/
+
+{ "op": "add", "path": "/kong-services", "value": { "krn:reg/us:org/acme-bank:runtime-group/acme-production-rg:/service/1" }
+	
