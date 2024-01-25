@@ -1,0 +1,7 @@
+{
+  "$schema": "https://cdn.zuplo.com/schemas/dev-portal.json",
+  "enableAuthentication": true,
+  "apiKeys": {
+    "bucketName": "z$env(ZUPLO_PROJECT_ID)-$env(ZUPLO_ENVIRONMENT_TYPE)"
+  }
+}
